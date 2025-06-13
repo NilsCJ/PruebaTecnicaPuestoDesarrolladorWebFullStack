@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -17,7 +18,13 @@ export default function Dashboard() {
     <div className="container mt-4">
       <h2>Bienvenido, {user.nombre}</h2>
       <p>Rol: {user.rol}</p>
-      <button className="btn btn-danger" onClick={logout}>Cerrar sesión</button>
+      <button className="btn btn-danger mb-3" onClick={logout}>Cerrar sesión</button>
+
+      {user.rol === 'admin' && (
+        <div>
+          <Link href="/admin/products" className="btn btn-primary">Gestionar Productos</Link>
+        </div>
+      )}
     </div>
   );
 }
