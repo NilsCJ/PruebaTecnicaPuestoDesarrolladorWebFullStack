@@ -1,57 +1,103 @@
-# PruebaTecnicaPuestoDesarrolladorWebFullStack
-Plataforma Ecommerce Creado por Nils Carrillo
+# 🛍️ Plataforma E-commerce - Prueba Técnica Full Stack
 
-## Configuración del entorno
+Este proyecto es una plataforma e-commerce desarrollada como parte de una prueba técnica para el puesto de desarrollador web full stack. Permite a usuarios autenticados agregar productos a un carrito de compras, y a administradores gestionar productos (crear, editar, eliminar) con control de roles, subida de imágenes y autenticación JWT.
 
-1. Copia el archivo `.env.example` y renómbralo a `.env`:
+---
 
+# 🧰 Tecnologías utilizadas
+
+# Frontend:
+- [Next.js 14](https://nextjs.org/)
+- React + TypeScript
+- Bootstrap 5
+- React Context API
+- Axios
+
+# Backend:
+- Node.js + Express
+- JWT para autenticación
+- Multer para subida de imágenes
+- MySQL como base de datos
+- bcryptjs para encriptar contraseñas
+- dotenv para manejo de variables de entorno
+
+---
+
+# ⚙️ Requisitos previos
+
+- Node.js v18+
+- MySQL Server
+- npm
+
+---
+
+# 🛠️ Instrucciones para ejecutar el proyecto
+
+# 🔁 Clonar el repositorio
+
+# Ejecutar los siguientes comandos 
 ```bash
-cp .env.example .env
-```
-
-2. Completa los valores requeridos en `.env` antes de iniciar la aplicación.
-
-## Instalación de dependencias
-
-Ejecuta el siguiente comando en la raíz del proyecto para instalar las dependencias del backend:
-
-```bash
+git clone https://github.com/NilsCJ/PruebaTecnicaPuestoDesarrolladorWebFullStack.git
 npm install
 ```
 
-## Inicio del backend
+# 🧱 Crear la base de datos y tablas:
+# Importa el archivo db/schema.sql en tu cliente MySQL (Workbench, DBeaver o CLI):
+Ruta base de datos: ./db/schema.sql;
 
-Para iniciar el servidor Express ejecuta:
 
-```bash
-npm start
-```
-
-El backend se ejecutará en `http://localhost:4000` (o en el puerto definido en la variable `PORT`) y las rutas de la API utilizan el prefijo `/api`.
-
-## Ejecución del frontend
-
-Dentro de la carpeta `frontend` instala las dependencias y levanta el entorno de desarrollo de Next.js:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-El frontend estará disponible en `http://localhost:3000`.
-
-## Variables de entorno y URLs de la API
-
-El archivo `.env` debe contener las siguientes variables (consulta `.env.example`):
-
-```env
+# 🗃️ Crear el archivo .env a partir del archivo .env.example
 PORT=4000
 JWT_SECRET=your_secret_key
 DB_HOST=your_db_host
 DB_USER=your_db_user
 DB_PASSWORD=your_db_password
 DB_NAME=your_db_name
+
+
+# 🚀 Iniciar el servidor:
+npx nodemon index.js
+# El servidor estará disponible en http://localhost:4000
+
+# 🌐 Frontend
+# 📁 Ir a la carpeta frontend:
+
+# 📦 Instalar dependencias:
+```bash
+npm install
 ```
 
-El frontend utiliza `http://localhost:4000/api` como URL base para comunicarse con el backend (ver `frontend/src/app/hooks/useAxios.ts`). Si cambias el puerto del backend, actualiza esta URL en consecuencia.
+# 🚀 Iniciar el servidor de desarrollo:
+npm run dev
+# La app estará disponible en http://localhost:3000
+
+# 🧾 Detalles de la base de datos
+# El archivo db/schema.sql contiene:
+
+Creación de la base de datos
+
+Tablas:
+
+users (usuarios con roles admin o user)
+
+products (productos con imagen, descripción, precio)
+
+cart_items (productos en carrito por usuario)
+
+# 🧪 Acceso y prueba
+Crear usuario en http://localhost:4000/api/auth/register o desde frontend
+
+Iniciar sesión como admin para acceder a /admin/products
+
+# Usuario autenticado puede:
+
+Ver /products
+
+Agregar al carrito
+
+Ver /cart
+
+# 📦 Extras (opcional)
+Las imágenes se almacenan en el backend dentro de la carpeta uploads
+
+El sistema utiliza JWT para proteger rutas tanto en frontend como en backend
