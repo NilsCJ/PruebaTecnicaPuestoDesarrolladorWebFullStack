@@ -63,7 +63,9 @@ export default function ProductsAdminPage() {
     setError('');
     fetchProducts();
   } catch (err: any) {
-    setError(err.response?.data?.error || 'Error al guardar producto');
+    console.error(err);
+    setError(err.response?.data?.error || err.message || 'Error al guardar producto');
+
   }
  };
 
