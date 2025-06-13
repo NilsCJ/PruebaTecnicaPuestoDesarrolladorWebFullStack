@@ -9,7 +9,14 @@ exports.register = (req, res) => {
 
   const sql = 'INSERT INTO users (nombre, email, password, rol) VALUES (?, ?, ?, ?)';
   db.query(sql, [nombre, email, hashedPassword, rol || 'user'], (err) => {
-    if (err) return res.status(500).json({ error: err });
+    //if (err) return res.status(500).json({ error: err });
+    if (err) {
+      console.error(err);
+      return res.status(500).json({
+        error: err.message,
+        code: err.code
+      });
+    }
     res.json({ message: 'Usuario registrado correctamente' });
   });
 };
