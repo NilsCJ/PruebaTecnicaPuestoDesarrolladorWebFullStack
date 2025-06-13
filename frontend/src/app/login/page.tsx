@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../context/AuthContext';
@@ -11,13 +11,25 @@ export default function LoginPage() {
   const router = useRouter();
   const axios = useAxios();
   const { login } = useAuth();
+  const [mensaje, setMensaje] = useState('');
+
+  useEffect(() => {
+  const destino = localStorage.getItem('redirectAfterLogin');
+  if (destino) {
+    setMensaje('Debes iniciar sesión para continuar');
+  }
+}, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await axios.post('/auth/login', { email, password });
       login(res.data.user, res.data.token);
-      router.push('/dashboard');
+      const destiny = localStorage.getItem('redirectAfterLogin') || '/dashboard';
+      localStorage.removeItem('redirectAfterLogin'); // limpia el localStorage
+      router.push(destiny);
+
     } catch (err: any) {
       setError(err.response?.data?.error || 'Error de inicio de sesión');
     }
@@ -26,6 +38,7 @@ export default function LoginPage() {
   return (
     <div className="container mt-5">
       <h2>Iniciar Sesión</h2>
+      {mensaje && <div className="alert alert-warning">{mensaje}</div>}
       <form onSubmit={handleSubmit} className="col-md-4">
         <div className="mb-3">
           <label className="form-label">Correo electrónico</label>

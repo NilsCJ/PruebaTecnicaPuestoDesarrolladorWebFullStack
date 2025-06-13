@@ -13,6 +13,7 @@ interface Product {
 }
 
 export default function ProductsPage() {
+  const [cartCount, setCartCount] = useState(0);
   const axios = useAxios();
   const { user } = useAuth();
   const router = useRouter();
@@ -25,7 +26,8 @@ export default function ProductsPage() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+    fetchCartCount();
+  }, [user]);
 
   const fetchProducts = async () => {
     try {
@@ -35,18 +37,41 @@ export default function ProductsPage() {
       setError('Error al obtener productos');
     }
   };
+  const fetchCartCount = async () => { //Función para obtener el conteo del carrito
+    if (!user)return;
+    try {
+        const res = await axios.get('/cart');
+        const total = res.data.reduce((sum: number, item: any) => sum + item.cantidad, 0);
+        setCartCount(total);
+    } catch (err) {
+        console.error('Error al obtener carrito');
+    }
+  };
+
 
   const handleAddToCart = async (product_id: number) => {
     if (!user) return router.push('/login');
 
     try {
-      await axios.post('/cart/add', { product_id });
-      alert('Producto agregado al carrito');
+        await axios.post('/cart/add', { product_id });
+            setCartCount(cartCount + 1); //suma inmediata
+            alert('Producto agregado al carrito');
     } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || 'Error al agregar al carrito');
+        console.error(err);
+        setError(err.response?.data?.error || 'Error al agregar al carrito');
     }
+
   };
+
+    const handleRedirectToCart = () => {
+    if (!user) {
+        localStorage.setItem('redirectAfterLogin', '/cart');
+        return router.push('/login');
+    }
+
+    router.push('/cart');
+    };
+
 
   const productosFiltrados = products.filter((p) =>
     p.nombre.toLowerCase().includes(search.toLowerCase())
@@ -60,16 +85,31 @@ export default function ProductsPage() {
     <div className="container mt-4">
       <h2>Productos</h2>
 
-      <input
-        type="text"
-        className="form-control my-3"
-        placeholder="Buscar por nombre"
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setCurrentPage(1); // reset al cambiar búsqueda
-        }}
-      />
+    <div className="row align-items-center my-3">
+        <div className="col-md-8">
+            <input
+            type="text"
+            className="form-control"
+            placeholder="Buscar por nombre"
+            value={search}
+            onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+            }}
+            />
+        </div>
+        <div className="col-md-4 text-end mt-2 mt-md-0">
+            <button className="btn btn-primary position-relative" onClick={handleRedirectToCart}>
+                Ver carrito
+                {cartCount > 0 && (
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {cartCount}
+                    </span>
+                )}
+            </button>
+        </div>
+    </div>
+
 
       {error && <div className="alert alert-danger">{error}</div>}
 
