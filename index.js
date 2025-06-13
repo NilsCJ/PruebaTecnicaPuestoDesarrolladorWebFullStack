@@ -21,10 +21,12 @@ const productRoutes = require('./routes/productRoutes');
 app.use('/api/products', productRoutes);
 
 const path = require('path');
-//app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const fs = require('fs');
 const uploadsPath = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath);
 }
 app.use('/uploads', express.static(uploadsPath));
+
+const cartRoutes = require('./routes/cartRoutes');
+app.use('/api/cart', cartRoutes);
