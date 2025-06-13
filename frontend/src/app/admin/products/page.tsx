@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import useAxios from '../../hooks/useAxios';
+import DataTable from 'react-data-table-component';
 
 interface Product {
   id: number;
@@ -21,6 +22,13 @@ export default function ProductsAdminPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [imagen, setImagen] = useState<File | null>(null);
+  const [filtro, setFiltro] = useState('');
+  const productsFiltered = products.filter((p) => {
+  const texto = `${p.nombre} ${p.descripcion} ${p.precio}`.toLowerCase();
+    return texto.includes(filtro.toLowerCase()); //Convertimos a minúsculas para evitar problemas de mayúsculas/minúsculas
+  });
+
+
 
 
   useEffect(() => {
@@ -32,6 +40,41 @@ export default function ProductsAdminPage() {
     const res = await axios.get('/products');
     setProducts(res.data);
   };
+
+  const columns = (handleEdit: any, handleDelete: any) => [
+  {
+      name: 'Imagen',
+      selector: (row: any) => row.imagen,
+      cell: (row: any) => (
+        <img src={`http://localhost:4000${row.imagen}`} width="60" alt="producto" />
+      ),
+      sortable: false,
+    },
+    {
+      name: 'Nombre',
+      selector: (row: any) => row.nombre,
+      sortable: true,
+    },
+    {
+      name: 'Descripción',
+      selector: (row: any) => row.descripcion,
+      sortable: false,
+    },
+    {
+      name: 'Precio',
+      selector: (row: any) => `₡ ${row.precio}`,
+      sortable: true,
+    },
+    {
+      name: 'Acciones',
+      cell: (row: any) => (
+        <>
+          <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(row)}>Editar</button>
+          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(row.id)}>Eliminar</button>
+        </>
+      ),
+    },
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -89,6 +132,33 @@ export default function ProductsAdminPage() {
         setError('Solo se permiten imágenes .jpg, .jpeg, .png');
     }
   };
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: '#343a40', // color gris oscuro tipo Bootstrap dark
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: '15px',
+      },
+    },
+    rows: {
+      style: {
+        fontSize: '14px',
+        minHeight: '60px',
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: '1px solid #dee2e6',
+        paddingTop: '10px',
+      },
+    },
+    highlightOnHoverStyle: {
+      backgroundColor: '#f8f9fa',
+      cursor: 'pointer',
+    },
+  };
+
 
   
 
@@ -105,7 +175,7 @@ export default function ProductsAdminPage() {
           <textarea name="descripcion" className="form-control" placeholder="Descripción" value={form.descripcion} onChange={handleChange} />
         </div>
         <div className="mb-2">
-          <input type="number" name="precio" className="form-control" placeholder="Precio" value={form.precio} onChange={handleChange} />
+          <input type="number" name="precio" className="form-control" value={form.precio || ''} placeholder="Precio" onChange={handleChange} />
         </div>
         <div className="mb-2">
           <input type="file" className="form-control" onChange={handleImageChange} accept="image/*" />
@@ -125,32 +195,27 @@ export default function ProductsAdminPage() {
           </button>
         )}
       </form>
+      <DataTable
+        columns={columns(handleEdit, handleDelete)}
+        data={productsFiltered}
+        pagination
+        responsive
+        highlightOnHover
+        striped
+        noDataComponent="No hay productos disponibles"
+        customStyles={customStyles}
+        subHeader
+        subHeaderComponent={
+          <input
+            type="text"
+            className="form-control w-25"
+            placeholder="Buscar productos..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+          />
+        }
+      />
 
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((p) => (
-            <tr key={p.id}>
-              <td><img src={`http://localhost:4000${p.imagen}`} alt={p.nombre} width="60" /></td>
-              <td>{p.nombre}</td>
-              <td>{p.descripcion}</td>
-              <td>₡ {p.precio}</td>
-              <td>
-                <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(p)}>Editar</button>
-                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id)}>Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }

@@ -51,6 +51,12 @@ export default function LoginPage() {
         {error && <div className="alert alert-danger">{error}</div>}
         <button type="submit" className="btn btn-primary">Entrar</button>
       </form>
+      <p className="mt-3">
+        ¿No tienes una cuenta?{' '}
+        <a href="/register" className="text-decoration-none">
+          Regístrate aquí
+        </a>
+      </p>
     </div>
   );
 }

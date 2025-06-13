@@ -18,6 +18,13 @@ export default function Dashboard() {
     <div className="container mt-4">
       <h2>Bienvenido, {user.nombre}</h2>
       <p>Rol: {user.rol}</p>
+      <button
+        className="btn btn-outline-primary mb-3"
+        style={{ marginRight: '15px' }}
+        onClick={() => router.push('/products')}
+      >
+        Ir a la tienda
+      </button>
       <button className="btn btn-danger mb-3" onClick={logout}>Cerrar sesión</button>
 
       {user.rol === 'admin' && (

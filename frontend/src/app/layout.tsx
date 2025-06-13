@@ -34,7 +34,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 import { AuthProvider } from './context/AuthContext';
-
 export const metadata = {
   title: 'E-commerce',
 };
