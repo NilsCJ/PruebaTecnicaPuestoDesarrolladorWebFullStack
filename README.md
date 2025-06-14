@@ -63,6 +63,9 @@ El servidor estará disponible en http://localhost:4000
 
 # 🌐 Frontend
 - 📁 Ir a la carpeta frontend:
+```bash
+cd frontend
+```
 - 📦 Instalar dependencias:
 ```bash
 npm install
