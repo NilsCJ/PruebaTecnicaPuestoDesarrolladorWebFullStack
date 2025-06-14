@@ -72,7 +72,7 @@ npm install
 ```bash
 npm run dev
 ```
-- La app estará disponible en http://localhost:3000
+- La app estará disponible en http://localhost:3000/login
 
 # 🧾 Detalles de la base de datos
 - El archivo db/DBEcommerceZetaSTEAM.sql contiene:
