@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useAxios from '../hooks/useAxios';
 import { useRouter } from 'next/navigation';
+import DataTable, { TableColumn } from 'react-data-table-component';
 
 interface CartItem {
   id: number;
@@ -16,8 +17,8 @@ export default function CartPage() {
   const { user } = useAuth();
   const router = useRouter();
   const axios = useAxios();
-
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
     if (!user) return router.push('/login');
@@ -36,42 +37,80 @@ export default function CartPage() {
 
   const total = cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
 
+  const filteredItems = cart.filter((item) =>
+    item.nombre.toLowerCase().includes(filterText.toLowerCase())
+  );
+
+  const columns: TableColumn<CartItem>[] = [
+    {
+      name: 'Imagen',
+      cell: (row) => <img src={`http://localhost:4000${row.imagen}`} width={60} />,
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+    {
+      name: 'Producto',
+      selector: (row) => row.nombre,
+      sortable: true,
+    },
+    {
+      name: 'Cantidad',
+      selector: (row) => row.cantidad.toString(),
+    },
+    {
+      name: 'Precio',
+      selector: (row) => `₡ ${row.precio}`,
+    },
+    {
+      name: 'Subtotal',
+      selector: (row) => `₡ ${row.precio * row.cantidad}`,
+    },
+    {
+      name: 'Acción',
+      cell: (row) => (
+        <button className="btn btn-danger btn-sm" onClick={() => handleRemove(row.id)}>
+          Eliminar
+        </button>
+      ),
+    },
+  ];
+
   return (
     <div className="container mt-4">
-      <h2>Mi carrito</h2>
+      <h2>Carrito de Compras</h2>
 
       {cart.length === 0 ? (
-        <p>Tu carrito está vacío.</p>
+        <div className="text-center mt-5">
+          <h4>🛒 ¡Tu carrito está vacío!</h4>
+          <p>Explora nuestros productos y encuentra lo que necesitas.</p>
+          <button className="btn btn-primary mt-3" onClick={() => router.push('/products')}>
+            Ir a la tienda
+          </button>
+        </div>
       ) : (
         <>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Imagen</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Subtotal</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.map((item) => (
-                <tr key={item.id}>
-                  <td><img src={`http://localhost:4000${item.imagen}`} width={60} /></td>
-                  <td>{item.nombre}</td>
-                  <td>{item.cantidad}</td>
-                  <td>₡ {item.precio}</td>
-                  <td>₡ {item.precio * item.cantidad}</td>
-                  <td>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleRemove(item.id)}>Eliminar</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="d-flex justify-content-end mb-3">
+            <input
+              type="text"
+              className="form-control w-50"
+              placeholder="Buscar producto..."
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+            />
+          </div>
 
-          <h4>Total: ₡ {total}</h4>
+          <DataTable
+            columns={columns}
+            data={filteredItems}
+            pagination
+            paginationPerPage={10}
+            highlightOnHover
+            striped
+            responsive
+          />
+
+          <h4 className="text-end mt-4">Total: ₡ {total.toLocaleString()}</h4>
         </>
       )}
     </div>

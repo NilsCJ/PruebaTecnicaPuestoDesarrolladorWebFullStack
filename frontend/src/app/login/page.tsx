@@ -39,44 +39,61 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Iniciar Sesión</h2>
+    <div className="d-flex justify-content-center align-items-center vh-100"> {/* centra todo vertical y horizontalmente. */}
+      <div className="card shadow p-4" style={{ width: '100%', maxWidth: '400px' }}> {/* tarjeta Bootstrap con sombra y padding. */}
+      <h2 className="text-center mb-4">Iniciar Sesión</h2>
+
+      {/* Mensaje de advertencia si es necesario */}
       {mensaje && <div className="alert alert-warning">{mensaje}</div>}
-      <form onSubmit={handleSubmit} className="col-md-4">
+
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input type="email" className="form-control" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <label className="form-label">Correo electrónico</label>
+        <input
+          type="email"
+          className="form-control"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         </div>
+
         <div className="mb-3">
         <label className="form-label">Contraseña</label>
         <div className="position-relative">
           <input
-            type={mostrarPassword ? 'text' : 'password'}
-            className="form-control pe-5"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+          type={mostrarPassword ? 'text' : 'password'}
+          className="form-control pe-5"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           />
+          {/* Botón para mostrar/ocultar contraseña */}
           <button
-            type="button"
-            className="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
-            onClick={() => setMostrarPassword(!mostrarPassword)}
-            tabIndex={-1}
+          type="button"
+          className="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+          onClick={() => setMostrarPassword(!mostrarPassword)}
+          tabIndex={-1}
           >
-            {mostrarPassword ? <FaEyeSlash /> : <FaEye />}
+          {mostrarPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
-      </div>
+        </div>
 
+        {/* Mensaje de error si existe */}
         {error && <div className="alert alert-danger">{error}</div>}
-        <button type="submit" className="btn btn-primary">Entrar</button>
-      </form>
-      <p className="mt-3">
+
+        <button type="submit" className="btn btn-primary w-100">Entrar</button> { /* la clase w-100 se adapta a pantallas pequeñas como móviles. */}
+
+        {/* Enlace para registrarse */}
+        <p className="mt-3 text-center">
         ¿No tienes una cuenta?{' '}
         <a href="/register" className="text-decoration-none">
           Regístrate aquí
         </a>
-      </p>
+        </p>
+      </form>
+      </div>
     </div>
   );
 }

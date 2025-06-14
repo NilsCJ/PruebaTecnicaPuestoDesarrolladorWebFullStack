@@ -17,11 +17,7 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(to right, #f5f7fa, #c3cfe2); /* Light gradient background */
 }
 
 * {
@@ -34,6 +30,22 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.login-background {
+  background: linear-gradient(to right, #dae2f8, #d6a4a4);
+  min-height: 100vh;
+}
+
+.register-background {
+  background: linear-gradient(to right, #b4b4b4, #a6c1ee);
+  min-height: 100vh;
+}
+
+.default-background {
+  background: linear-gradient(to right, #f5f7fa, #c3cfe2);
+  min-height: 100vh;
+}
+
 
 @media (prefers-color-scheme: dark) {
   html {

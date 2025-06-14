@@ -4,12 +4,9 @@ import { useRouter } from 'next/navigation';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../context/AuthContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importamos iconos para mostrar/ocultar contraseña
-
+import { showSuccess, showError, showConfirm } from '../utils/alerts'; // Importamos SweetAlert2 para mostrar mensajes de alerta
 
 export default function RegisterPage() {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
   const router = useRouter();
@@ -26,68 +23,76 @@ export default function RegisterPage() {
 
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-    if (!nombre || !email || !password) {
-      return setError('Todos los campos son obligatorios');
-    }
+        if (!form.nombre || !form.email || !form.password) {
+        return setError('Todos los campos son obligatorios');
+        }
 
-    try {
-      await axios.post('/auth/register', { nombre, email, password, rol: form.rol });
+        try {
+        await axios.post('/auth/register', form);
 
-      const res = await axios.post('/auth/login', { email, password });
-      login(res.data.user, res.data.token);
+        const res = await axios.post('/auth/login', { email: form.email, password: form.password });
+        login(res.data.user, res.data.token);
 
-      const destino = localStorage.getItem('redirectAfterLogin') || '/dashboard';
-      localStorage.removeItem('redirectAfterLogin');
-      router.push(destino);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || 'Error al registrar usuario');
-    }
-  };
+        const destino = localStorage.getItem('redirectAfterLogin') || '/dashboard';
+        localStorage.removeItem('redirectAfterLogin');
+        showSuccess('Usuario registrado correctamente');
+        router.push(destino);
+        } catch (err: any) {
+        console.error(err);
+        setError(err.response?.data?.error || 'Error al registrar usuario');
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value }); //Esta función hace que todos tus inputs funcionen dinámicamente según el name
+    };
+
 
   return (
-    <div className="container mt-5">
-      <h2>Registro de Usuario</h2>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="card shadow p-4" style={{ width: '100%', maxWidth: '500px' }}>
+        <h2 className="text-center mb-4">Registrarse</h2>
 
-      {error && <div className="alert alert-danger">{error}</div>}
-      {mensaje && <div className="alert alert-success">{mensaje}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="col-md-5">
-        <div className="mb-3">
+        <form onSubmit={handleSubmit}>
+            <div className="mb-3">
             <label className="form-label">Nombre</label>
             <input
                 type="text"
+                name="nombre"
                 className="form-control"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
                 required
+                value={form.nombre}
+                onChange={handleChange}
             />
-        </div>
+            </div>
 
-        <div className="mb-3">
+            <div className="mb-3">
             <label className="form-label">Correo electrónico</label>
             <input
                 type="email"
+                name="email"
                 className="form-control"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
+                value={form.email}
+                onChange={handleChange}
             />
-        </div>
+            </div>
 
-        <div className="mb-3">
-        <label className="form-label">Contraseña</label>
+            <div className="mb-3">
+            <label className="form-label">Contraseña</label>
             <div className="position-relative">
                 <input
                 type={mostrarPassword ? 'text' : 'password'}
+                name="password"
                 className="form-control pe-5"
                 required
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={form.password}
+                onChange={handleChange}
                 />
                 <button
                 type="button"
@@ -98,9 +103,9 @@ export default function RegisterPage() {
                 {mostrarPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
             </div>
-        </div>
+            </div>
 
-        <div className="form-check form-switch mb-3">
+            <div className="form-check form-switch mb-3">
             <input
                 className="form-check-input"
                 type="checkbox"
@@ -113,14 +118,17 @@ export default function RegisterPage() {
             <label className="form-check-label" htmlFor="rolSwitch">
                 ¿Registrar como administrador?
             </label>
+            </div>
+
+            <button type="submit" className="btn btn-success w-100">Registrarse</button>
+
+            <p className="mt-3 text-center">
+            ¿Ya tienes cuenta?{' '}
+            <a href="/login" className="text-decoration-none">Inicia sesión aquí</a>
+            </p>
+        </form>
         </div>
-
-
-
-        <button type="submit" className="btn btn-primary">
-          Registrarse
-        </button>
-      </form>
     </div>
-  );
+    );
+
 }
