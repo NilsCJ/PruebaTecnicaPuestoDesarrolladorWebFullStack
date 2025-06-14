@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../context/AuthContext';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importamos iconos para mostrar/ocultar contraseña
+
 
 export default function RegisterPage() {
   const [nombre, setNombre] = useState('');
@@ -14,6 +16,7 @@ export default function RegisterPage() {
   const axios = useAxios();
   const { login } = useAuth();
   const [rol, setRol] = useState('user');
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,15 +72,27 @@ export default function RegisterPage() {
         </div>
 
         <div className="mb-3">
-            <label className="form-label">Contraseña</label>
-            <input
-                type="password"
-                className="form-control"
+        <label className="form-label">Contraseña</label>
+            <div className="position-relative">
+                <input
+                type={mostrarPassword ? 'text' : 'password'}
+                className="form-control pe-5"
+                required
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-            />
+                />
+                <button
+                type="button"
+                className="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                onClick={() => setMostrarPassword(!mostrarPassword)}
+                tabIndex={-1}
+                >
+                {mostrarPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
             </div>
+        </div>
+
         <div className="form-check form-switch mb-3">
             <input
                 className="form-check-input"

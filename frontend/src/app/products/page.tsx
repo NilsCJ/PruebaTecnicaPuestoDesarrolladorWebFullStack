@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { showConfirm, showSuccess, showError } from '../utils/alerts';
 
 interface Product {
   id: number;
@@ -55,7 +56,7 @@ export default function ProductsPage() {
     try {
         await axios.post('/cart/add', { product_id });
             setCartCount(cartCount + 1); //suma inmediata
-            alert('Producto agregado al carrito');
+            showSuccess('Producto agregado al carrito');
     } catch (err: any) {
         console.error(err);
         setError(err.response?.data?.error || 'Error al agregar al carrito');

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import useAxios from '../../hooks/useAxios';
 import DataTable from 'react-data-table-component';
+import { showConfirm, showSuccess, showError } from '../../utils/alerts';
 
 interface Product {
   id: number;
@@ -18,7 +19,12 @@ export default function ProductsAdminPage() {
   const router = useRouter();
   const axios = useAxios();
   const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState<Omit<Product, 'id'>>({ nombre: '', descripcion: '', precio: 0, imagen: '' });
+  const [form, setForm] = useState({
+    nombre: '',
+    descripcion: '',
+    precio: 0,
+    imagen: '',
+  });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [imagen, setImagen] = useState<File | null>(null);
@@ -83,9 +89,11 @@ export default function ProductsAdminPage() {
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  if (!form.nombre || !form.descripcion || !form.precio || (!imagen && !editingId)) {
-    return setError('Todos los campos son obligatorios');
+  if (!form.nombre || !form.descripcion || !form.precio || (!imagen && !editingId)) { //Creamos las validaciones
+    return showError('Todos los campos son obligatorios y válidos'); 
   }
+
+
 
   const data = new FormData();
   data.append('nombre', form.nombre);
@@ -96,8 +104,10 @@ export default function ProductsAdminPage() {
   try {
     if (editingId) {
       await axios.put(`/products/${editingId}`, data);
+      showSuccess('Producto editado correctamente');
     } else {
       await axios.post('/products', data);
+      showSuccess('Producto guardado correctamente');
     }
 
     setForm({ nombre: '', descripcion: '', precio: 0, imagen: '' });
@@ -119,11 +129,19 @@ export default function ProductsAdminPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm('¿Eliminar este producto?')) {
+    const confirmed = await showConfirm('¿Deseas eliminar este producto?');
+
+    if (!confirmed) return;
+
+    try {
       await axios.delete(`/products/${id}`);
       fetchProducts();
+      showSuccess('Producto eliminado correctamente');
+    } catch (err: any) {
+      showError(err.response?.data?.error || 'Error al eliminar');
     }
   };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
@@ -169,14 +187,20 @@ export default function ProductsAdminPage() {
 
       <form onSubmit={handleSubmit} className="mb-4 col-md-6">
         <div className="mb-2">
-          <input type="text" name="nombre" className="form-control" placeholder="Nombre" value={form.nombre} onChange={handleChange} />
+          <input type="text" name="nombre" className={`form-control`} placeholder="Nombre" value={form.nombre} onChange={handleChange} />
         </div>
+        {form.nombre.trim() === '' && (
+          <div className="invalid-feedback">El nombre es obligatorio</div>
+        )}
         <div className="mb-2">
           <textarea name="descripcion" className="form-control" placeholder="Descripción" value={form.descripcion} onChange={handleChange} />
         </div>
         <div className="mb-2">
-          <input type="number" name="precio" className="form-control" value={form.precio || ''} placeholder="Precio" onChange={handleChange} />
+          <input type="number" name="precio" className={`form-control`} value={form.precio || ''} placeholder="Precio" onChange={handleChange} />
         </div>
+        {form.precio <= 0 && (
+          <div className="invalid-feedback">El precio debe ser mayor a 0</div>
+        )}
         <div className="mb-2">
           <input type="file" className="form-control" onChange={handleImageChange} accept="image/*" />
         </div>

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAxios from '../hooks/useAxios';
 import { useAuth } from '../context/AuthContext';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,6 +13,8 @@ export default function LoginPage() {
   const axios = useAxios();
   const { login } = useAuth();
   const [mensaje, setMensaje] = useState('');
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+
 
   useEffect(() => {
   const destino = localStorage.getItem('redirectAfterLogin');
@@ -45,9 +48,26 @@ export default function LoginPage() {
           <input type="email" className="form-control" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="mb-3">
-          <label className="form-label">Contraseña</label>
-          <input type="password" className="form-control" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <label className="form-label">Contraseña</label>
+        <div className="position-relative">
+          <input
+            type={mostrarPassword ? 'text' : 'password'}
+            className="form-control pe-5"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            type="button"
+            className="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+            onClick={() => setMostrarPassword(!mostrarPassword)}
+            tabIndex={-1}
+          >
+            {mostrarPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </div>
+      </div>
+
         {error && <div className="alert alert-danger">{error}</div>}
         <button type="submit" className="btn btn-primary">Entrar</button>
       </form>
