@@ -46,7 +46,6 @@ export default function CartPage() {
       name: 'Imagen',
       cell: (row) => <img src={`http://localhost:4000${row.imagen}`} width={60} />,
       ignoreRowClick: true,
-      button: true,
       wrap: true
     },
     {
