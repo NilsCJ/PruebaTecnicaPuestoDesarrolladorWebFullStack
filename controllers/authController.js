@@ -8,7 +8,7 @@ exports.register = (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   const sql = 'INSERT INTO users (nombre, email, password, rol) VALUES (?, ?, ?, ?)';
-  db.query(sql, [nombre, email, hashedPassword, rol || 'user'], (err) => {
+  db.query(sql, [nombre, email, hashedPassword, rol || 'user'], (err) => { //En caso de no enviar rol, se asigna 'user' por defecto
     //if (err) return res.status(500).json({ error: err });
     if (err) {
       console.error(err);

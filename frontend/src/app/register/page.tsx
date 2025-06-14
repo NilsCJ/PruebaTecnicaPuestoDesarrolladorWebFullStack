@@ -17,6 +17,13 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const [rol, setRol] = useState('user');
   const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [form, setForm] = useState({
+    nombre: '',
+    email: '',
+    password: '',
+    rol: 'user', // predeterminado
+  });
+
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +34,7 @@ export default function RegisterPage() {
     }
 
     try {
-      await axios.post('/auth/register', { nombre, email, password });
+      await axios.post('/auth/register', { nombre, email, password, rol: form.rol });
 
       const res = await axios.post('/auth/login', { email, password });
       login(res.data.user, res.data.token);
@@ -97,14 +104,17 @@ export default function RegisterPage() {
             <input
                 className="form-check-input"
                 type="checkbox"
-                id="switchRol"
-                checked={rol === 'admin'}
-                onChange={() => setRol(rol === 'user' ? 'admin' : 'user')}
+                id="rolSwitch"
+                checked={form.rol === 'admin'}
+                onChange={(e) =>
+                setForm({ ...form, rol: e.target.checked ? 'admin' : 'user' })
+                }
             />
-            <label className="form-check-label" htmlFor="switchRol">
-                Registrarse como administrador
+            <label className="form-check-label" htmlFor="rolSwitch">
+                ¿Registrar como administrador?
             </label>
         </div>
+
 
 
         <button type="submit" className="btn btn-primary">

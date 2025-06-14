@@ -138,7 +138,8 @@ export default function ProductsAdminPage() {
       fetchProducts();
       showSuccess('Producto eliminado correctamente');
     } catch (err: any) {
-      showError(err.response?.data?.error || 'Error al eliminar');
+      const msg = err.response?.data?.error || 'Error al eliminar producto';
+      showError(msg); // El mensaje de error proviene del servidor, el cual se especificó el mensaje en el backend
     }
   };
 

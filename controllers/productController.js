@@ -54,9 +54,21 @@ exports.update = (req, res) => {
 };
 
 
-exports.remove = (req, res) => {
-  db.query('DELETE FROM products WHERE id = ?', [req.params.id], (err) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json({ message: 'Producto eliminado correctamente' });
-  });
+exports.remove = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Verifica si el producto está en algún carrito
+    const [rows] = await db.query('SELECT * FROM cart_items WHERE product_id = ?', [id]);
+
+    if (rows.length > 0) {
+      return res.status(400).json({ error: 'No se puede eliminar: producto en uso en uno o más carritos.' });
+    }
+
+    await db.query('DELETE FROM products WHERE id = ?', [id]);
+    res.json({ message: 'Producto eliminado exitosamente' });
+  } catch (err) {
+    console.error('Error al eliminar producto:', err);
+    res.status(500).json({ error: 'No se puede eliminar: producto en uso en uno o más carritos.' });
+  }
 };
