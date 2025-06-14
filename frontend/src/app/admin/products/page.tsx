@@ -178,13 +178,9 @@ export default function ProductsAdminPage() {
     },
   };
 
-
-  
-
-
   return (
     <div className="container mt-4">
-      <h2>Gestión de Productos</h2>
+      <h2>Mantenimiento de Productos</h2>
 
       <form onSubmit={handleSubmit} className="mb-4 col-md-6">
         <div className="mb-2">
